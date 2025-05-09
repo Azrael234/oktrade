@@ -1,0 +1,14 @@
+{
+    "api_key": "您的API Key",
+    "secret_key": "您的Secret Key",
+    "passphrase": "您的API密码",
+    "proxy_host": "127.0.0.1",
+    "proxy_port": 10808,
+    "database": {
+        "host": "数据库主机地址",
+        "database": "数据库名称",
+        "user": "数据库用户名",
+        "password": "数据库密码",
+        "port": 5432
+    }
+}
