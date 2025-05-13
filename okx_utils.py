@@ -8,7 +8,7 @@ def load_config():
     """
     加载配置文件
     """
-    config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config.json")
+    config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config_moni.json")
     try:
         with open(config_path, 'r') as f:
             return json.load(f)

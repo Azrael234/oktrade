@@ -32,7 +32,7 @@ def load_config():
     """
     加载配置文件
     """
-    config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config.json')
+    config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config_moni.json')
     
     try:
         with open(config_path, 'r') as f:
@@ -69,6 +69,9 @@ def main():
     parser.add_argument('--plot-kline', action='store_true', help='绘制K线图')
     parser.add_argument('--timeframe', type=str, default='1h', help='时间周期')
     parser.add_argument('--save-chart', type=str, help='保存图表路径')
+    
+    # 新增打印数据参数
+    parser.add_argument('--print-data', action='store_true', help='打印数据库中的内容')
     
     # 模型回测参数
     parser.add_argument('--backtest', action='store_true', help='回测交易策略')
@@ -270,6 +273,41 @@ def main():
         args.plot_kline, args.backtest
     ]):
         parser.print_help()
+
+    # 打印数据库内容
+    if args.print_data:
+        logger.info("开始打印数据库内容")
+        
+        # 打印交易对信息
+        instruments = db_manager.get_all_instruments()
+        logger.info(f"交易对信息（共{len(instruments)}个）：")
+        for inst in instruments:
+            logger.info(f" - {inst}")
+        
+        # 打印K线数据
+        if args.inst_id:
+            logger.info(f"开始打印 {args.inst_id} 的K线数据")
+            conn = db_manager.connect()
+            cursor = conn.cursor()
+            try:
+                cursor.execute("""
+                    SELECT timestamp, open, high, low, close, volume 
+                    FROM kline_1m 
+                    WHERE inst_id = %s 
+                    ORDER BY timestamp
+                """, (args.inst_id,))
+                
+                rows = cursor.fetchall()
+                logger.info(f"找到 {len(rows)} 条K线数据：")
+                for row in rows:
+                    logger.info(f" - {row}")
+            except Exception as e:
+                logger.error(f"获取K线数据失败: {str(e)}")
+            finally:
+                cursor.close()
+                conn.close()
+        else:
+            logger.info("请使用--inst-id参数指定要打印的交易对")
 
 if __name__ == "__main__":
     main()

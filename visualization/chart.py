@@ -1,10 +1,15 @@
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
+from matplotlib import font_manager
 import pandas as pd
 import numpy as np
 import os
 from data.aggregator import KlineAggregator
 
+# 添加中文字体支持
+font_path = "C:/Windows/Fonts/msyh.ttc"  # Windows 系统下的微软雅黑字体路径
+font_manager.fontManager.addfont(font_path)
+plt.rcParams['font.family'] = 'Microsoft YaHei'  # 设置全局字
 class ChartGenerator:
     """
     图表生成器
