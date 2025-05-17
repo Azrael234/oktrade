@@ -1,10 +1,13 @@
 import torch
 from torch.utils.data import DataLoader
-from .data_loader import KLineDataset
-from .model import TCNPredictor, LSTMPredictor, TransformerPredictor
+from .data import KLineDataset
+from .models import TCNPredictor, LSTMPredictor, TransformerPredictor
 import os
+from configs.config import config_manager
 
-def train_transformer(db_manager, inst_id, config):
+def train_transformer(db_manager, inst_id, experiment_name='default'):
+    # 获取配置
+    config = config_manager.get_config()
     # 初始化数据集
     dataset = KLineDataset(db_manager, inst_id)
     train_data = dataset.get_train_data()
@@ -23,7 +26,9 @@ def train_transformer(db_manager, inst_id, config):
     )
     return _train_model(model, train_loader, val_loader, config, f"{inst_id}_transformer.pth")
 
-def train_tcn(db_manager, inst_id, config):
+def train_tcn(db_manager, inst_id, experiment_name='default'):
+    # 获取配置
+    config = config_manager.get_config()
     # 初始化数据集
     dataset = KLineDataset(db_manager, inst_id)
     train_data = dataset.get_train_data()
@@ -41,7 +46,9 @@ def train_tcn(db_manager, inst_id, config):
     )
     return _train_model(model, train_loader, val_loader, config, f"{inst_id}_tcn.pth")
 
-def train_lstm(db_manager, inst_id, config):
+def train_lstm(db_manager, inst_id, experiment_name='default'):
+    # 获取配置
+    config = config_manager.get_config()
     # 初始化数据集
     dataset = KLineDataset(db_manager, inst_id)
     train_data = dataset.get_train_data()

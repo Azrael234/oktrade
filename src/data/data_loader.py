@@ -63,7 +63,7 @@ class KLineDataset(Dataset):
     
     def _preprocess_data(self):
         # 将数据转换为numpy数组
-        prices = np.array([(x[1] + x[2] + x[3] + x[4])/4 for x in self.data])  # 使用平均价格
+        prices = np.array([(x[1] + x[2] + x[3] + 2 * x[4])/5 for x in self.data])  # 使用平均价格,加大close的权重
         volumes = np.array([x[5] for x in self.data])
         
         # 归一化
