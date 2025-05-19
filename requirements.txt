@@ -1,0 +1,5 @@
+matplotlib>=3.7.1
+numpy>=1.23.5
+pandas>=1.4.2
+psycopg2_binary>=2.9.10
+requests>=2.31.0

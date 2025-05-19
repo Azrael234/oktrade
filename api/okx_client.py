@@ -28,7 +28,8 @@ class OKXClient:
         self.proxy_host = proxy_host
         self.proxy_port = proxy_port
         self.logger = logging.getLogger(__name__)
-        
+        self._request_timestamps = []
+    
     def _get_timestamp(self):
         """
         获取ISO格式的时间戳
@@ -76,6 +77,16 @@ class OKXClient:
             
         return headers
     
+    def _rate_limit(self):
+        now = time.time()
+        # 只保留2秒内的请求
+        self._request_timestamps = [t for t in self._request_timestamps if now - t < 2]
+        if len(self._request_timestamps) >= 20:
+            sleep_time = 2 - (now - self._request_timestamps[0])
+            if sleep_time > 0:
+                time.sleep(sleep_time)
+        self._request_timestamps.append(time.time())
+
     def _request(self, method, request_path, params=None, body=None, max_retries=3):
         """
         发送请求
@@ -99,6 +110,7 @@ class OKXClient:
             }
         
         for attempt in range(max_retries):
+            self._rate_limit()  # 新增：限速
             try:
                 self.logger.debug(f"尝试请求 {url} (尝试 {attempt+1}/{max_retries})")
                 
