@@ -1,6 +1,6 @@
 # 忽略配置文件（包含敏感信息）
 config.json
-
+config_moni.json
 # 忽略Python编译文件
 __pycache__/
 *.py[cod]
