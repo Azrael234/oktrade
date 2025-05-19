@@ -57,7 +57,7 @@ def main():
     parser.add_argument('--collect-kline', action='store_true', help='采集K线数据')
     parser.add_argument('--inst-type', type=str, default='SPOT', help='产品类型')
     parser.add_argument('--inst-id', type=str, help='产品ID')
-    parser.add_argument('--days', type=int, default=1, help='采集多少天的数据')
+    parser.add_argument('--days', type=int, default=10, help='采集多少天的数据')
     parser.add_argument('--limit', type=int, help='限制采集的交易对数量')
     parser.add_argument('--use-proxy', action='store_true', help='使用代理')
     parser.add_argument('--start-date', type=str, help='开始日期 (YYYY-MM-DD)')
