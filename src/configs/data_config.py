@@ -3,8 +3,11 @@ import os
 import torch
 from pathlib import Path
 
-class ConfigManager:
-    def __init__(self, config_dir="experiments"):
+class DataConfigManager:
+    def __init__(self, config_dir="data_configs"):
+        self.configs = {}
+        self.active_config = None
+        self.config_dir = config_dir
         self.configs = {}
         self.active_experiment = None
         self.config_dir = config_dir
@@ -23,9 +26,6 @@ class ConfigManager:
             with open(config_file, 'r') as f:
                 self.configs[experiment_name] = json.load(f)
                 # 自动设置device
-                if 'device' in self.configs[experiment_name]:
-                    if self.configs[experiment_name]['device'] == 'cuda' and not torch.cuda.is_available():
-                        self.configs[experiment_name]['device'] = 'cpu'
 
     def add_experiment(self, name, config):
         """添加新实验配置并保存到JSON文件"""
@@ -50,30 +50,20 @@ class ConfigManager:
             raise ValueError(f"Experiment '{name}' not found in configurations")
 
 # 初始化配置管理器
-config_manager = ConfigManager()
+data_config_manager = DataConfigManager()
 
 # 如果没有任何配置，添加默认配置
-if not config_manager.configs:
+if not data_config_manager.configs:
     default_config = {
-        'batch_size': 32,
-        'input_dim': 2,  
-        'output_dim': 5,
-        'model_dim': 128,
-        'num_heads': 8,
-        'num_layers': 4,
-        'lr': 0.0001,
-        'epochs': 50,
-        'dropout': 0.1,
-        'mode': 'regression',
-        'eval_interval': 5,
-        'save_interval': 5,
-        'device': 'cuda' if torch.cuda.is_available() else 'cpu',
-        'classification': {
-            'thresholds': [-0.5, -0.2, 0, 0.2, 0.5],
-            'class_weights': None
-        }
+            "database": "oktrade",
+            "lookback": 60,
+            "forecast": 5,
+            "split_ratio": [0.8, 0.1, 0.1],
+            "use_label_smoothing": True,
+            "thresholds": [-0.5, -0.2, 0, 0.2, 0.5],
+            "class_weights": None
     }
-    config_manager.add_experiment('default', default_config)
+    data_config_manager.add_experiment('default', default_config)
 
 # 设置默认实验为当前活动实验
-config_manager.set_active_experiment('default')
+data_config_manager.set_active_experiment('default')

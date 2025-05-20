@@ -81,6 +81,8 @@ def main():
                             help='训练模式: regression(默认)或classification')
     train_parser.add_argument('--experiment', default='default',
                             help='使用的实验配置名称')
+    train_parser.add_argument('--dataset', default='default',
+                            help='使用的数据集名称')
     
     # 测试命令
     test_parser = subparsers.add_parser('test', help='测试模型')
@@ -89,6 +91,8 @@ def main():
                            help='实验名称(必需)')
     test_parser.add_argument('--mode', choices=['regression', 'classification'], default='regression',
                            help='测试模式: regression(默认)或classification')
+    test_parser.add_argument('--dataset', default='default',
+                            help='使用的数据集名称')
     
     # 比较命令
     compare_parser = subparsers.add_parser('compare', help='比较多个模型')
@@ -100,6 +104,8 @@ def main():
                               help='交易对ID，默认BTC-USDT')
     compare_parser.add_argument('--mode', choices=['regression', 'classification'], default='regression',
                               help='比较模式: regression(默认)或classification')
+    compare_parser.add_argument('--dataset', default='default',
+                            help='使用的数据集名称')
     
     args = parser.parse_args()
     config = load_config()
@@ -124,7 +130,7 @@ def main():
     if args.command == 'train':
         # 为本次实验生成专属日志文件
         timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-        log_filename = f"{timestamp}_train_{args.inst}_{args.model_type}_{args.mode}.log"
+        log_filename = f"train_{args.inst}_{args.model_type}_{args.mode}.log"
         # log_file = generate_experiment_log_path(args, log_filename)
         setup_logging(log_file=log_filename, experiment=args.experiment)  # 使用指定的日志文件和实验名称
 
@@ -133,12 +139,15 @@ def main():
         logger.info(f"模型类型: {args.model_type}")
         logger.info(f"交易对: {args.inst}")
         logger.info(f"任务模式: {args.mode}")
+        logger.info(f"数据集名称: {args.dataset}")
+        logger.info(f"实验名称: {args.experiment}")
         train_model(
             db_manager=db_manager,
             inst_id=args.inst,
             model_type=args.model_type,
             mode=args.mode,
             experiment_name=args.experiment,
+            dataset_name=args.dataset,
             log_filename = log_filename
         )
     elif args.command == 'test':
@@ -150,9 +159,13 @@ def main():
         logger.info("🚀 开始测试任务")
         logger.info(f"模型路径: {args.model_path}")
         logger.info(f"任务模式: {args.mode}")
+        logger.info(f"数据集名称: {args.dataset}")
+        logger.info(f"实验名称: {args.experiment}")
         evaluate_model(
             db_manager=db_manager,
             model_path=args.model_path,
+            experiment_name=args.experiment,
+            dataset_name=args.dataset,  # 传递数据集名称到evaluate_model
             mode=args.mode
         )
     elif args.command == 'compare':
@@ -161,13 +174,16 @@ def main():
         log_file = setup_logging(log_filename, args.experiment)
         logger = logging.getLogger(__name__)
         logger.info("🚀 开始比较任务")
-        logger.info(f"实验名称: {args.experiment}")
         logger.info(f"交易对: {args.inst}")
         logger.info(f"任务模式: {args.mode}")
         logger.info(f"比较模型列表: {args.model_paths}")
+        logger.info(f"数据集名称: {args.dataset}")
+        logger.info(f"实验名称: {args.experiment}")
         compare_models(
             db_manager=db_manager,
             model_paths=args.model_paths,
+            experiment=args.experiment,
+            dataset_name=args.dataset,
             inst_id=args.inst,
             mode=args.mode,
             config=config
