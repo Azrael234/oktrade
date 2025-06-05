@@ -4,6 +4,12 @@ from datetime import datetime, timedelta
 import logging
 import os
 import json
+import sys
+
+# 添加项目根目录到系统路径
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+# 然后再导入模块
 from database.db_schema import DatabaseManager
 from data.aggregator import KlineAggregator
 
